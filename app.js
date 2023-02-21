@@ -1,15 +1,21 @@
 const express = require("express");
 const path = require("path");
 
+const { engine } = require("express-handlebars");
+
 const bodyParser = require("body-parser");
 const adminRoutes = require("./routes/admin");
 const shopRoutes = require("./routes/shop");
 
-// invoke the express app object to to get thr functionality
+// invoke the express app object to to get the functionality
 const app = express();
 
-// external template engince which help to bind dyamic data with html.
-app.set("view engine", "pug");
+// HANDLEBARS SETUP
+app.engine("handlebars", engine());
+app.set("view engine", "handlebars");
+
+// external template engince which help to bind dyamic data with html. [ THIS IS DEFAULT PROVIDED BY NODEJS ]
+// app.set("view engine", "pug");
 
 // setting the page views folder here to pickup the file
 app.set("views", "views");
@@ -29,16 +35,20 @@ app.use("/admin", adminRoutes.router);
 //all other routes go here
 app.use(shopRoutes);
 
-// if you are request for route and it not found then it will catch here
+// if you are request for route and it not found then it will catch here [WITHOUT TEMPLATE]
 // app.use((req, res, next) => {
 //   res.status(404).sendFile(path.resolve("views/404.html"));
 // });
 
-// pub 404 page
-app.use((req, res, next) => {
-  res.status(404).render("pug/404");
-});
+// PUG TEMPLATE =>
+// app.use((req, res, next) => {
+//   res.status(404).render("pug/404", { pageTitle: "Page not found" });
+// });
 
+app.use((req, res, next) => {
+  // HBS TEMPLATE =>
+  res.status(404).render("404", { pageTitle: "Page not found" });
+});
 // you can provide any port number to start server
 // better you use 8000 something...
 app.listen(9090, () => {
